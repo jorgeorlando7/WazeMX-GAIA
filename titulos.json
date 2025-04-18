@@ -1,0 +1,20 @@
+{
+  "abreviaturas": {
+    "Arquitecto": "Arq.",
+    "Doctor": "Dr.",
+    "Doctora": "Dra.",
+    "Ingeniero": "Ing.",
+    "Licenciado": "Lic.",
+    "Profesor": "Prof.",
+    "Profesora": "Profa.",
+    "General": "Gral.",
+    "Coronel": "Cnel.",
+    "Teniente": "Tte.",
+    "Sargento": "Sgto.",
+    "Comandante": "Cmte.",
+    "Gobernador": "Gob.",
+    "Presidente": "Pdte.",
+    "Obispo": "Ob.",
+    "Monseñor": "Mons."
+  }
+}
