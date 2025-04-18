@@ -1,1 +1,14 @@
-
+{
+  "abreviaturas": {
+    "Este": "E",
+    "Norte": "Nte.",
+    "Noreste": "NE",
+    "Noroeste": "NO",
+    "Oeste": "O",
+    "Oriente": "Ote.",
+    "Sur": "S",
+    "Sureste": "SE",
+    "Suroeste": "SO",
+    "Poniente": "Pte."
+  }
+}
