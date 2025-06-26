@@ -1,0 +1,190 @@
+// ==UserScript==
+// @name         Abreviador de Calles (Versión Mejorada)
+// @namespace    https://github.com/TavoCC/abreviaciones_calles
+// @version      1.0
+// @description  Abreviador de calles con un botón de encendido y apagado.
+// @author       TuNombre
+// @match        https://gaia.inegi.org.mx/mdm6/*
+// @grant        GM_setClipboard
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // Abreviaturas locales
+    const abreviaturas = {
+        "Este": "E",
+        "Norte": "Nte.",
+        "Noreste": "NE",
+        "Noroeste": "NO",
+        "Oeste": "O",
+        "Oriente": "Ote.",
+        "Sur": "S",
+        "Sureste": "SE",
+        "Suroeste": "SO",
+        "dirección": ">",
+        "Primero": "1º",
+        "Primera": "1ª",
+        "Primer": "1er",
+        "Tercer": "3er",
+        "Tercera": "3ª",
+        "Segunda": "2ª",  // Corrección para Segunda
+        "Almacén": "Alm.",
+        "Arquitecto": "Arq.",
+        "Arzobispo": "Arz.",
+        "Autopista": "Autop.",
+        "Avenida": "Av.",
+        "Ayuntamiento": "Ayto.",
+        "Bulevar": "Blvd.",
+        "Calle": "Cl.",
+        "Callejón": "Cjn.",
+        "Calzada": "Calz.",
+        "Camino": "Cam.",
+        "Capitán": "Cap.",
+        "Carretera": "Carrt.",
+        "Centro Comercial": "C.C.",
+        "Cerrada": "Cda.",
+        "Circuito": "Circ.",
+        "Código": "Cód.",
+        "Comandante": "Cmte.",
+        "Combate": "Cbte.",
+        "Consultorio": "Consult.",
+        "Continuación": "Cont.",
+        "Coronel": "Cnel.",
+        "Departamento": "Depto.",
+        "Diagonal": "Diag.",
+        "Distrito": "Dtto.",
+        "Doctor": "Dr.",
+        "Doctora": "Dra.",
+        "Don": "Dn.",
+        "Doña": "Dña.",
+        "Edificio": "Edif.",
+        "Entrada": "Ent.",
+        "Entronque Carretero": "E.C.",
+        "Esquina": "Esq.",
+        "Estación de Servicio": "ES",
+        "Estado": "Edo.",
+        "Extensión": "Ext.",
+        "Fábrica": "Fáb.",
+        "General": "Gral.",
+        "Glorieta": "Gta.",
+        "Gobernador": "Gob.",
+        "Gobernadora": "Gdora.",
+        "Hermana": "Hna.",
+        "Hermanas": "Hnas.",
+        "Hermano": "Hno.",
+        "Hermanos": "Hnos.",
+        "Ingeniero": "Ing.",
+        "Intendente": "Int.",
+        "Interior": "Intr.",
+        "Kilómetro": "Km",
+        "Laboratorio": "Lab.",
+        "Licenciado": "Lic.",
+        "Local": "Loc.",
+        "Lote": "Lt.",
+        "Manzana": "Manz.",
+        "México": "MEX",
+        "Monseñor": "Mons.",
+        "Obispo": "Ob.",
+        "Oficina": "Of.",
+        "Pasaje": "Pje.",
+        "Plaza": "Pza.",
+        "Poniente": "Pte.",
+        "Pontífice": "Pnt.",
+        "Presbítero": "Presb.",
+        "Presidente": "Pdte.",
+        "Privada": "Priv.",
+        "Profesor": "Prof.",
+        "Profesora": "Profa.",
+        "República": "Rep.",
+        "Reverenda": "Rvda.",
+        "Reverendo": "Rvd.",
+        "Santa": "Sta.",
+        "Santo": "Sto.",
+        "Sargento": "Sgto.",
+        "Sección": "Secc.",
+        "Sociedad": "Sdad.",
+        "Sociedad": "Soc.",
+        "Teniente": "Tte.",
+        "Universidad": "Univ.",
+        "1ra. ": "1ª ",
+        "Prolongación": "Prol."
+    };
+
+    // Función para procesar el texto y aplicar las abreviaturas
+    function procesarTexto(texto) {
+        let resultado = texto;
+
+        // Reemplazar cada palabra por su abreviatura correspondiente
+        for (const [original, abreviado] of Object.entries(abreviaturas)) {
+            const regex = new RegExp(`\\b${original}\\b`, 'gi');
+            resultado = resultado.replace(regex, abreviado);
+        }
+
+        return resultado;
+    }
+
+    // Función para manejar el portapapeles y actualizarlo con el texto abreviado
+    function manejarPortapapeles() {
+        try {
+            const texto = window.getSelection().toString();  // Obtener el texto seleccionado
+            if (texto) {
+                const textoProcesado = procesarTexto(texto);
+                if (texto !== textoProcesado) {
+                    navigator.clipboard.writeText(textoProcesado); // Actualizar portapapeles
+                    console.log('Texto procesado y copiado:', textoProcesado);
+                }
+            }
+        } catch (e) {
+            console.error('Error al manejar el portapapeles:', e);
+        }
+    }
+
+    // Crear el botón de encendido y apagado
+    function crearBoton() {
+        const boton = document.createElement('button');
+        boton.textContent = 'Encender Abreviador';
+        boton.style.position = 'fixed';
+        boton.style.bottom = '20px';
+        boton.style.right = '20px';
+        boton.style.padding = '10px';
+        boton.style.backgroundColor = '#4CAF50';
+        boton.style.color = 'white';
+        boton.style.border = 'none';
+        boton.style.borderRadius = '5px';
+        boton.style.cursor = 'pointer';
+        boton.style.zIndex = '9999';
+
+        let isActivated = false;
+        let intervalId;
+
+        boton.onclick = function() {
+            if (isActivated) {
+                clearInterval(intervalId);  // Apagar el abreviador y limpiar el intervalo
+                boton.textContent = 'Encender Abreviador';
+                console.log('Abreviador desactivado');
+            } else {
+                intervalId = setInterval(manejarPortapapeles, 500); // Activar el procesamiento cada 500ms
+                boton.textContent = 'Apagar Abreviador';
+                console.log('Abreviador activado');
+            }
+
+            isActivated = !isActivated;
+        };
+
+        document.body.appendChild(boton);
+    }
+
+    // Inicializar el script
+    function init() {
+        crearBoton();
+    }
+
+    // Asegurarse de que el DOM esté cargado antes de ejecutar el script
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+})();
